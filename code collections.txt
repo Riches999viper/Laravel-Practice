@@ -1,4 +1,4 @@
-start date from today and end date should be 7days from today
+
 default is yyyy-mm-dd
 'startdate' => 'required|date|date_format:Y-m-d|after_or_equal:today',
 'enddate' => 'required|date|date_format:Y-m-d|after:startdate|before_or_equal:'.now()->addDays(7)->format('Y-m-d'),
