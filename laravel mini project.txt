@@ -1,0 +1,333 @@
+
+firstname
+lastname
+email
+phone
+website
+password
+isChecked
+
+
+
+  "first_name" => null
+  "last_name" => null
+  "company" => null
+  "email" => null
+  "password" => null
+  "area_code" => null
+  "phone" => null
+  "is_registered" => "Y" 
+
+name
+password
+courseStart
+gender
+courses
+
+Login System
+1. Install Laravel and auth
+	- composer create-project laravel/laravel subscriber4 "8.6.3"
+	- composer require laravel/ui 
+	- php artisan ui bootstrap --auth
+	- npm install && npm run dev
+	- npm run dev
+2. Migrate the default tables
+3. Create migration file so to add new column
+	php artisan make:migration modify_users_table --table=users 
+4. modify modal fillable for bulk assignment
+5. make controller for customLogin
+	php artisan make:controller CustomLogin -r
+6. Import registraion views
+7. Save registration values to database 
+7. Import Session, Auth and Hash
+	use App\Models\user;
+	use Hash;
+	use Session;
+8. Add Bootstrap code in dashboard
+9. create registration form
+10. add validation to registration form4
+
+
+
+ 
+
+name
+password
+birthday -
+gender - 
+email
+phone - 
+subject - 
+middle
+
+
+
+
+
+
+
+
+ 
+
+php artisan make:controller customAuthController
+
+
+
+
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use Hash;
+use Session;
+
+
+ 
+
+
+
+################################
+1. Create Laravel Project Folder in htdocs
+	- composer create-project laravel/laravel pizzashop
+	- composer create-project laravel/laravel visitor "8.6.3"
+
+2. Install composer ui package - sending emails & authentication, API integration, image manipulation, form handling
+	- composer require laravel/ui 
+	- php artisan ui bootstrap --auth
+	 
+3. Edit ENV file and create database
+4. Database
+	- Edit users table	
+	- create menu table - id/name/description/image/pizza_small/pizza_medium/pizza_big
+	- Create Orders table - 
+5. Create controller
+	- php artisan make:controller loginController -r
+6. Create Model
+	- php artisan make:model customLogin -m
+	- Create table's column
+	 name/description/pizza_small_prize/pizza_medium_prize/pizza_big_prize/category/image/
+7. Modify Store method of controller
+8. Create request
+	php artisan make:Request tshirtUpdateRequest
+	"name"=> 'required|string|min:3|max:40'
+	"image"=>'required|mimes:ppng,jpg,jpeg'
+9. Validation form php artisan make:Request tshirtStoreRequest
+  @if (count($errors) > 0)
+                @foreach($errors->all() as $error)
+                    {{$error}}
+                @endforeach
+              @endif
+10. in model 
+	protected $guarded = [];
+	   $path = $request->image->store('public/pizza');
+  	pizza::Create([
+	'name' => $request->name 
+        ]);
+11. link storage folder with publicimage
+	php artisan storage:link
+12. create middleware
+	php artisan make:middleware loginCheck
+	auth()->check() && auth()->user()->isadmin==1
+	register in kernal
+	route::group(['middleware'=>'auth'.'admin'],function(){...}) to protect route
+13. use databaseSeeder
+	$user = new User();
+	$user->name = "Admin";
+	$user->email = "uimonk@gmail.com";
+	$user->password = bcrypt("uimonk@gmail.com");
+	$user->isAdmin = 1;
+	$user->save();
+	php artisan db:seed
+14. Create relationship between table
+	public function user(){
+	return this->belongsTo(User::class)
+		}
+15. update order confirmation status
+$order = Order::find($id);
+$order->Order::where('id',$id)->update(['status'=>$request->status]);
+
+16. modify db to add new table
+php artisan make:migration add_phone_to_order
+
+17. 	$table->string('phone')
+	$table->dropColumn('phone')
+18. datatables
+  var table = $('#myTable').DataTable({
+    pageLength : 5,
+    lengthMenu: [[5, 10, 20], [5, 10, 20]]
+  })
+	
+
+
+
+  if(auth()->check() && auth()->user()->isAdmin == 1){
+            return $next($request);
+        } else {
+            // Redirect non-logged-in users to the login page
+            return redirect()->route('login')->with('error', 'Unauthorized access. Please log in.');
+        }
+
+ 
+ 	    "name"=> 'required|string|min:3|max:40',
+            "description"=> 'required|string|min:3|max:40',
+            "price"=> 'required|numeric|min:3|max:500', 
+            "image"=>'required|mimes:png,jpg,jpeg'
+
+
+
+   @if(session('message'))
+                            <div class="alert alert-success" role="alert">
+                                {{ session('message') }}
+                            </div>
+                      @endif
+
+
+
+gettin errr in id, as im logged out i could not acces id in laravel
+   @if(auth()->user()->id)
+          $userid = auth()->user()->id;
+          @else
+          $userid = 0;
+      @endif
+
+
+
+
+name
+description
+price
+category
+image
+
+#######################
+user_id
+date
+time
+phone
+email
+sandwich_id
+price
+message
+
+######################################## table creation
+           $table->string("name");
+            $table->text("description");
+             $table->integer("price"); 
+            $table->string("image"); 
+
+ 
+            $table->integer("user_id");
+            $table->string("date");
+	         $table->string("time");
+	         $table->string("phone");
+	          $table->string("email");
+           	 $table->integer("cake_id");
+		 $table->string("price");
+	          $table->text("message");
+ 	          $table->text("status")->status('pending');
+
+###################
+
+model::orderBy('id', 'DESC')->get()
+
+
+#############
+
+public function user(){
+	return $this->belongsTo(User::class)
+}
+
+
+###############
+
+order::where('id',$id)->update(['status'=>$request->status]);
+
+
+###########
+
+php artisan make:migration add_phone_to_order
+php artisan migrate:rollback
+
+
+############################################ form
+
+              
+        @if (count($errors) > 0) 
+            @foreach($errors->all() as $error)
+                 <div class="alert alert-danger">
+                      {{$error}}
+                </div>
+            @endforeach
+        @endif
+
+
+
+
+############## Topics
+1. Create form 
+2. Create form validation with Laravel
+3. create a database table to insert with ORM Laravel
+4. insert data from the form with ORM Laravel
+5. Use Admin LTE Ui for backend dashboard
+6. CRUD with popup
+7. Database seeder
+8. Role Maneger
+9. Front end design
+10. foreign key relaition
+
+########### Laravel In Depth
+1. Create Model
+2. Create Controller
+3. Create Request & Rules
+4. Link Storage and public folder
+5. Pass message between two pages
+6. index, create, destroy, delete, update functions in controller
+7. Model's static function - find, get, create
+8. Add Bootstrap Pagination with AppServiceProvider
+9. Use of databaseSeeder file to test data
+10. Create Middleware
+11. foreign key relationship btwn "User & Order & items"
+12. Add Column in table after migration
+
+############### CMS Website
+1. Create Database Table with laravel model
+2. Create Controllers to create route urls
+3. import admin LTE dashboard into laravel
+4. Add HTML Form in laravel blade 
+5. store the values of html form into database
+6. Add HTML Table in Laravel blade
+7. Delete row data with popup model
+8. Add Pagination
+9. Role manager for logedin user, admin 
+10. Order managerment
+
+
+#################### Parts
+1. Install Laravel and Configure Mysql
+2. Integrate AdminLTE
+2. Make use of Model & controller
+3. CRUD Operation with validation & Pagination
+4. Middleware
+5. Foreign key relationship
+
+
+ 
+
+ 
+
+
+
+
+
+
+
+
+ 
+ 
+ 
+
+
+ 
+
+
+
+
+
