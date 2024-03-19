@@ -1,0 +1,201 @@
+start date from today and end date should be 7days from today
+default is yyyy-mm-dd
+'startdate' => 'required|date|date_format:Y-m-d|after_or_equal:today',
+'enddate' => 'required|date|date_format:Y-m-d|after:startdate|before_or_equal:'.now()->addDays(7)->format('Y-m-d'),
+
+#################################################
+
+
+
+
+ $table->boolean('is_registered')->default(false); // Column for registration status
+
+################################# Validation
+        'email' => 'required|string|email|max:255|unique:users',
+        'area_code' => 'required|string|max:10',
+        'password' => 'required|string|min:8|confirmed',
+	'registered_user' => 'required|in:yes,no', // Validation for registered_user field
+   
+
+###############################
+	$phoneNumber = $request->area_code . $request->phone;
+	$isRegistered = $request->registered_user == 'yes' ? true : false;
+
+
+######################
+        'phone' => $phoneNumber,
+         'is_registered' => $isRegistered,
+
+
+#########################
+            $table->renameColumn('name', 'first_name');
+
+
+#########################
+
+
+Modify Column:
+
+            php artisan make:migration modify_users_table --table=users
+            ############## up
+             $table->date('birthday')->nullable();
+                $table->enum('gender', ['male', 'female', 'other'])->nullable();
+                 $table->string('phone')->nullable(); 
+
+    
+    ######################## users model
+                protected $fillable = [
+                'name',
+                'email',
+                'password',
+                'birthday',
+                'gender',
+                'phone'
+            ];
+
+            #################
+            use App\Models\user;
+use Illuminate\Support\Facades\Auth; 
+use Hash;
+use Session;
+  
+
+
+
+
+
+
+################## Validation
+                                @error('subject')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                  @enderror
+
+
+##################### 
+value="{{ old('name') }}"
+
+
+#########################
+   <div class="card-footer">
+                @if(Session::has('message'))
+                          <div style='color: green; font-size: 2rem!important; display: flex; justify-content: space-around;
+    padding: 1rem; background: #ddcfdc;'>{{ Session::get('message') }} 
+                                <a href='{{ route("customlogin") }}' class='btn btn--radius-2 btn--blue'>Login</a>
+                           </div>
+                    @endif 
+                </div>
+
+                
+
+#######################
+@guest  
+     
+          Please Login, to view details  -- 
+          <a href="{{ route('subscriberLogin')}}">Login</a> | <a href="{{ route('subscriberRegistration')}}">Register</a>
+        
+@else 
+@php
+    $userData = Session::get('userData');
+@endphp
+@if($userData)
+          Name:  {{$userData->name}}; <br>
+          Email:  {{$userData->email}}; <br>
+          Birthday:  {{$userData->birthday}}; <br>  
+          Phone:  {{$userData->phone}};  <br>
+          <a href="{{ route('subscriberLogout')}}">Logout</a>
+    
+@else
+   
+    <p>User data not available</p>
+  <!-- <a href="{{ route('subscriberLogout')}}">Logout</a>  -->
+    
+@endif
+
+
+        
+@endguest
+
+########################
+  
+     public function subscriberCheck(Request $request)
+     {
+         $request->validate([     
+             'email' => 'required',
+             'password'=> 'required'
+             ]);
+             $data = $request->only('email','password');
+ 
+             if(Auth::attempt($data)){
+                $userId = Auth::id(); 
+                $userData = User::find($userId);
+                Session::put('userData', $userData); 
+                return redirect()->route('subscriberHome');
+
+                // return redirect()->route('subscriberHome')->with('message', 'Login Successful')->with('user_id', auth()->id());
+
+             }else{
+                 return redirect()->route('subscriberlogin')->with('message','Login Failed');
+             } 
+     }
+
+
+###########################
+
+ public function subscriberSave(Request $request)
+     {
+        $request->validate([     
+            'name' => 'required',
+            'password'=> 'required',
+            'birthday'=> 'required',
+            'gender'=> 'required',
+            'email'=> 'required',
+            'phone'=> 'required',
+            'subject'=> 'required'
+            ]);
+    
+            $data = $request->all();
+            user::Create([
+                'name' =>  $data["name"],
+                'password' => Hash::make($data["password"]),
+                'birthday' => date('Y-m-d', strtotime($data["birthday"])), // Format the birthday as 'YYYY-MM-DD'
+                'gender'=> $data["gender"],
+                'email'=> $data["email"],
+                'phone'=> $data["phone"],
+                'subject'=> $data["subject"]
+            ]);
+    
+            return redirect()->route('subscriberRegistration')->with('message','Registered Successful');
+    
+        
+     } 
+
+     ################################
+
+
+   public function subscriberHome()
+     {
+        return view('subscriberHome');
+     }
+
+
+     public function subscriberLogin()
+     {
+        return view('subscriber.subscriberLogin');
+     }
+
+     public function subscriberRegistration()
+     {
+        return view('subscriber.subscriberRegistration');
+     }
+
+
+     #######################
+         public function subscriberLogout(Request $request)
+    {
+       Auth::logout(); // Logout the user
+       $request->session()->invalidate(); // Invalidate the session
+       $request->session()->regenerateToken(); // Regenerate the CSRF token 
+       return redirect('/subscriberHome'); // Redirect to the home page or any other desired location 
+   }
